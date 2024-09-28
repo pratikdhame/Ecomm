@@ -10,7 +10,11 @@ const cors = require("cors");
 const { type } = require("os");
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    credentials: true,
+    origin: ['https://ecomfron-two.vercel.app','https://ecomadmin-xi.vercel.app']
+}));
+app.use(express.json())
 
 // Database Connection With Mongo
 mongoose.connect("mongodb+srv://pratikdhamepawar:Sshs5to10%40yb@cluster0.yq2oi1i.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
