@@ -2,7 +2,6 @@ const port = process.env.PORT || 4000;
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
 const axios = require('axios');
 const multer = require('multer');
 const cors = require("cors");
@@ -14,7 +13,7 @@ app.use(cors({
     origin: ['https://ecomfron-two.vercel.app', 'https://ecomadmin-xi.vercel.app']
 }));
 
-// Database Connection With Mongo
+// MongoDB Connection
 mongoose.connect("mongodb+srv://pratikdhamepawar:Sshs5to10%40yb@cluster0.yq2oi1i.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0", {
     useNewUrlParser: true,
     useUnifiedTopology: true
@@ -122,92 +121,6 @@ app.post('/addproduct', upload.single('product'), async (req, res) => {
         console.error(error);
         res.status(500).json({ success: 0, error: "Product creation failed" });
     }
-});
-
-// User Schema for handling user registration and login
-const Users = mongoose.model('Users', {
-    name: {
-        type: String,
-    },
-    email: {
-        type: String,
-        unique: true,
-    },
-    password: {
-        type: String,
-    },
-    cartData: {
-        type: Object,
-    },
-    date: {
-        type: Date,
-        default: Date.now,
-    }
-});
-
-// User Signup
-app.post('/signup', async (req, res) => {
-    let check = await Users.findOne({ email: req.body.email });
-    if (check) {
-        return res.status(400).json({ success: false, errors: "Existing user found with same email Id" });
-    }
-
-    let cart = {};
-    for (let i = 0; i < 300; i++) {
-        cart[i] = 0;
-    }
-
-    const user = new Users({
-        name: req.body.username,
-        email: req.body.email,
-        password: req.body.password,
-        cartData: cart,
-    });
-    await user.save();
-
-    const data = {
-        user: {
-            id: user.id
-        }
-    };
-    const token = jwt.sign(data, 'secret_ecom');
-    res.json({ success: true, token });
-});
-
-// User Login
-app.post('/login', async (req, res) => {
-    let user = await Users.findOne({ email: req.body.email });
-    if (user) {
-        const passCompare = req.body.password === user.password;
-        if (passCompare) {
-            const data = {
-                user: {
-                    id: user.id
-                }
-            };
-            const token = jwt.sign(data, 'secret_ecom');
-            res.json({ success: true, token });
-        } else {
-            res.json({ success: false, errors: "Wrong Password" });
-        }
-    } else {
-        res.json({ success: false, errors: "Wrong Email Id" });
-    }
-});
-
-// Additional Endpoints
-app.get('/newcollections', async (req, res) => {
-    let products = await Product.find({});
-    let newcollection = products.slice(1).slice(-8);
-    console.log("NewCollection Fetched");
-    res.send(newcollection);
-});
-
-app.get('/popularinwomen', async (req, res) => {
-    let products = await Product.find({ category: "women" });
-    let popular_in_women = products.slice(0, 4);
-    console.log("Popular in Women Fetched");
-    res.send(popular_in_women);
 });
 
 // Start Server
