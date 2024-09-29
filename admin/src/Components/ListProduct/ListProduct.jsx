@@ -37,6 +37,9 @@ const ListProduct = () => {
         body: JSON.stringify({ id })
       });
 
+      if(res.ok){
+        alert('Product removed successfully');
+      }
       if (!res.ok) {
         throw new Error('Failed to remove product');
       }
