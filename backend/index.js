@@ -69,6 +69,32 @@ const Product = mongoose.model("Product", {
     }
 });
 
+// Endpoint to fetch all products
+app.get('/allproducts', async (req, res) => {
+    try {
+        const products = await Product.find({});
+        res.json(products); // Send back all products
+    } catch (error) {
+        console.error('Error fetching products:', error);
+        res.status(500).json({ success: 0, error: "Failed to fetch products" });
+    }
+});
+
+// Endpoint to remove a product by ID
+app.post('/removeproduct', async (req, res) => {
+    try {
+        const { id } = req.body; // Get ID from request body
+        const result = await Product.deleteOne({ id }); // Remove the product
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ success: 0, error: "Product not found" });
+        }
+        res.json({ success: 1, message: "Product removed successfully" });
+    } catch (error) {
+        console.error('Error removing product:', error);
+        res.status(500).json({ success: 0, error: "Failed to remove product" });
+    }
+});
+
 // Endpoint to upload image and create product
 app.post('/addproduct', upload.single('product'), async (req, res) => {
     try {
