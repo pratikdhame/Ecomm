@@ -15,15 +15,21 @@ const Chatbot = () => {
       // Send message to the chatbot API
       const response = await axios.post('https://ecomback-rho.vercel.app/chatbot', { message: input });
 
-      // Extracting the actual text from the nested response structure
+      // Extracting and formatting the actual text from the nested response structure
       const botResponse = response.data.response?.response?.candidates[0]?.content?.parts[0]?.text || 
                           'Invalid response from bot';
+
+      // Format the bot's response to include line breaks and bullet points
+      const formattedResponse = botResponse
+        .replace(/(\n|\r\n)/g, '<br />') // Replace new lines with HTML line breaks
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') // Replace bold Markdown with HTML strong
+        .replace(/\*\s*(.*?)\n/g, '<li>$1</li>'); // Replace bullet points with HTML list items
 
       // Update messages state with user and bot messages
       setMessages(prevMessages => [
         ...prevMessages, 
         { text: input, sender: 'user' }, 
-        { text: botResponse, sender: 'bot' }
+        { text: formattedResponse, sender: 'bot', isFormatted: true } // Mark as formatted
       ]);
       setInput(''); // Clear input field
     } catch (error) {
@@ -48,7 +54,8 @@ const Chatbot = () => {
       }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ textAlign: msg.sender === 'user' ? 'right' : 'left' }}>
-            <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> {msg.text}
+            <strong>{msg.sender === 'user' ? 'You' : 'Bot'}:</strong> 
+            <span dangerouslySetInnerHTML={{ __html: msg.isFormatted ? msg.text : msg.text }} />
           </div>
         ))}
         {loading && <div>Loading...</div>} {/* Show loading indicator */}
