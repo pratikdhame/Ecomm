@@ -8,7 +8,7 @@ const multer = require('multer');
 const cors = require("cors");
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI('AIzaSyDaKfHVgKhZ6gasu-l5vndVxQVUlL21Lr8');
+const genAI = new GoogleGenerativeAI('AIzaSyCdnptGxtrfTYuIb01yt-lIqX0_ZTIa5u4');
 
 
 // Middleware settings
