@@ -7,7 +7,7 @@ const Chatbot = () => {
 
   const sendMessage = async () => {
     try {
-      const response = await axios.post('/chatbot', { message: input });
+      const response = await axios.post('https://ecomback-rho.vercel.app/chatbot', { message: input });
       setMessages([...messages, { text: input, sender: 'user' }, { text: response.data.response, sender: 'bot' }]);
       setInput('');
     } catch (error) {
