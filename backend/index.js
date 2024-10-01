@@ -7,6 +7,10 @@ const axios = require('axios');
 const multer = require('multer');
 const cors = require("cors");
 
+const { GoogleGenerativeAI } = require('@google/generative-ai');
+const genAI = new GoogleGenerativeAI('AIzaSyDaKfHVgKhZ6gasu-l5vndVxQVUlL21Lr8');
+
+
 // Middleware settings
 app.use(express.json());
 app.use(cors({
@@ -235,6 +239,17 @@ app.get('/popularinwomen', async (req, res) => {
     console.log("Popular in Women Fetched");
     res.send(popular_in_women);
 });
+
+app.post('/chatbot', async (req, res) => {
+    try {
+      const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+      const response = await model.generateContent({ prompt: req.body.message });
+      res.json({ response: response.result });
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error processing your request');
+    }
+  });
 
 // Start Server
 app.listen(port, (error) => {
