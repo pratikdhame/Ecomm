@@ -8,7 +8,7 @@ const multer = require('multer');
 const cors = require("cors");
 
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const genAI = new GoogleGenerativeAI('AIzaSyCdnptGxtrfTYuIb01yt-lIqX0_ZTIa5u4');
+const genAI = new GoogleGenerativeAI('AIzaSyBZO_qPA9DzXIjk98g_viP3I0obbsyKHdQ');
 
 
 // Middleware settings
@@ -30,6 +30,25 @@ mongoose.connect("mongodb+srv://pratikdhamepawar:Sshs5to10%40yb@cluster0.yq2oi1i
 app.get("/", (req, res) => {
     res.send("Express App is Running");
 });
+
+app.post('/chatbot', async (req, res) => {
+    try {
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+const prompt = req.body.message;
+
+const result = await model.generateContent(prompt);
+    
+            res.json({ response: result
+        });
+    } catch (error) {
+        console.error('Error details:', error);
+        res.status(500).send('Error processing your request');
+    }
+});
+
+
+
 
 // Imgur Client ID
 const IMGUR_CLIENT_ID = '3cc35945b2a1646';  // Replace with your actual Imgur Client ID
@@ -240,16 +259,6 @@ app.get('/popularinwomen', async (req, res) => {
     res.send(popular_in_women);
 });
 
-app.post('/chatbot', async (req, res) => {
-    try {
-      const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-      const response = await model.generateContent({ prompt: req.body.message });
-      res.json({ response: response.result });
-    } catch (error) {
-      console.error(error);
-      res.status(500).send('Error processing your request');
-    }
-  });
 
 // Start Server
 app.listen(port, (error) => {
