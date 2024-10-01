@@ -14,11 +14,10 @@ const Chatbot = () => {
     try {
       // Send message to the chatbot API
       const response = await axios.post('https://ecomback-rho.vercel.app/chatbot', { message: input });
-      
-      // Check if response.data.response is valid
-      const botResponse = typeof response.data.response === 'string' 
-        ? response.data.response 
-        : 'Invalid response from bot';
+
+      // Extracting the actual text from the nested response structure
+      const botResponse = response.data.response?.response?.candidates[0]?.content?.parts[0]?.text || 
+                          'Invalid response from bot';
 
       // Update messages state with user and bot messages
       setMessages(prevMessages => [
